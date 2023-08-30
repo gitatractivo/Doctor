@@ -1,15 +1,15 @@
-import { Button, Modal } from "@mui/base";
+import { Modal } from "@mui/base";
 import { Backdrop, Box } from "@mui/material";
-import React, { useState } from "react";
-import dayjs from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
+import React, { useState } from "react";
 
 
 const style = {
   position: "absolute" ,
   top: "50%",
   left: "50%",
-  transform: "translate(-50%, -50%)",
+  transform: "translate(-50%, -35%)",
   bgcolor: "background.paper",
 
   boxShadow: 24,
@@ -47,44 +47,50 @@ const PatientDetails = (props) => {
             outline: "none",
             borderRadius: "5px",
             width: "80vw",
-            maxHeight:"80vh",
-            overflow:"scroll"
+            // height:"80rem",
+            maxHeight: "80vh",
+            overflowY: "scroll",
           }}
-          className="ease-in-out flex flex-col justify-center "
+          className="ease-in-out overflow-y-scroll scrollbar-track-slate-100   snap-y scroll-smooth  h-fit"
         >
-          <h2 id="parent-modal-title" className="text-2xl  mt-3 mb-2 mx-auto">
-            Patient Details
-          </h2>
-          <h1 className="text-3xl font-bold mb-1">Patient Name</h1>
-          <div className="flex justify-start gap-4">
-            <h3 className="text-2xl ">Age</h3>
-            <h3 className="text-2xl ">Sex</h3>
-            <h3 className="text-2xl ">Contact</h3>
-          </div>
+          <div className="  flex flex-col justify-center ">
+            <h2
+              id="snap-start parent-modal-title scroll-mt-10"
+              className="text-2xl  mt-3 mb-2 mx-auto"
+            >
+              Patient Details
+            </h2>
+            <h1 className="text-3xl font-bold mb-1">Patient Name</h1>
+            <div className="flex justify-start gap-4">
+              <h3 className="text-2xl ">Age</h3>
+              <h3 className="text-2xl ">Sex</h3>
+              <h3 className="text-2xl ">Contact</h3>
+            </div>
 
-          <p className="my-4 text-xl text-justify text-slate-800">
-            Medical history 
-          </p>
+            <p className="my-4 text-xl text-justify text-slate-800">
+              Medical history
+            </p>
 
-          <h3 className="text-lg my-3">Date and Time</h3>
+            <h3 className="text-lg my-3">Date and Time</h3>
 
-          <div className="flex flex-col md:flex-row justify-start gap-5 md:gap-12 mt-4">
-            <button className=" px-3 h-fit py-2.5 my-auto bg-green-400 rounded-lg text-white font-bold tracking-widest uppercase ">
-              Completed
-            </button>
-            <button className=" px-3 h-fit py-2.5 my-auto bg-red-600 rounded-lg text-white font-bold tracking-widest uppercase ">
-              Cancel
-            </button>
+            <div className="flex flex-col md:flex-row justify-start gap-5 md:gap-12 mt-4">
+              <button className=" px-3 h-fit py-2.5 my-auto bg-green-400 rounded-lg text-white font-bold tracking-widest uppercase ">
+                Completed
+              </button>
+              <button className=" px-3 h-fit py-2.5 my-auto bg-red-600 rounded-lg text-white font-bold tracking-widest uppercase ">
+                Cancel
+              </button>
 
-            <DateTimePicker
-              label="Controlled picker"
-              value={value}
-              onChange={(newValue) => setValue(newValue)}
-            />
+              <DateTimePicker
+                label="Set Date And Time"
+                value={value}
+                onChange={(newValue) => setValue(newValue)}
+              />
 
-            <button className=" px-3 h-fit py-2.5 my-auto bg-blue-600 rounded-lg text-white font-bold tracking-widest uppercase ">
-              Re-Schedule
-            </button>
+              <button className=" px-3 h-fit py-2.5 my-auto bg-blue-600 rounded-lg text-white font-bold tracking-widest uppercase ">
+                Re-Schedule
+              </button>
+            </div>
           </div>
         </Box>
       </Modal>
