@@ -4,7 +4,7 @@ import Patient from './components/Patient'
 function App() {
 
   return (
-    <div>
+    <div className='bg-slate-50'>
       <Navbar />
       <Patient />
     </div>
