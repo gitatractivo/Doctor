@@ -1,13 +1,12 @@
 import { Button, Modal } from "@mui/base";
 import { Backdrop, Box } from "@mui/material";
 import React, { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
-type Props = {};
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute" ,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -17,9 +16,9 @@ const style = {
   p: 4,
 };
 
-const PatientDetails = (props: Props) => {
-  const [first, setfirst] = useState<boolean>(false);
-  const [value, setValue] = React.useState<Dayjs | null>(
+const PatientDetails = (props) => {
+  const [first, setfirst] = useState(false);
+  const [value, setValue] = useState(
     dayjs(new Date())
   );
   return (

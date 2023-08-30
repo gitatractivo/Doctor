@@ -6,7 +6,7 @@ const arr = [1, 2, 3, 4, 5];
 const Patient = () => {
   const [value, setValue] = useState(0);
 
-  const handleChange = (newValue: number) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
   return (
