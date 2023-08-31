@@ -160,7 +160,9 @@ export default function PrimarySearchAppBar() {
           handleMenuClose();
           setToken(null);
           setUser(null);
-          navigate("/enter");
+          setTimeout(() => {
+            navigate("/enter");
+          }, 10);
         }}
       >
         Logout
