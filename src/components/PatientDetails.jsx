@@ -42,7 +42,7 @@ const PatientDetails = ({details}) => {
       const resp = await axios.request(config);
       console.log(resp)
       if(resp.status===200){
-        // window.location.reload();
+        window.location.reload();
       }
     }
     const onRes = async () => {
