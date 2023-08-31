@@ -16,22 +16,30 @@ const NewStaff = ({ isLoading, setIsLoading }) => {
   const onSubmit = async (data) => {
     let config = {
       method: "post",
+      timeout: 6000,
+
       maxBodyLength: Infinity,
       url: `http://localhost:8080/api/auth/forget-password?email=${data.email}`,
       headers: {
         "Content-Type": "application/json",
       },
     };
-
-    const resp = await axios.request(config);
-    console.log(resp);
-    if (resp.status === 200) {
-      setFirst(true)
+    try {
+      const resp = await axios.request(config);
+      console.log(resp);
+      if (resp.status === 200) {
+        setFirst(true);
+      }
+    } catch (error) {
+      alert(error)
     }
+
+    
   };
   const onReset = async (data) => {
     let config = {
       method: "post",
+      timeout:10000,
       maxBodyLength: Infinity,
       url: `http://localhost:8080/api/auth/set-new-password?resetPasswordToken=${data.token}&newPassword=${data.password}'`,
       headers: {
