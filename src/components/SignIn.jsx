@@ -54,7 +54,14 @@ const SignIn = ({ isLoading, setIsLoading }) => {
         label="Password"
         type="password"
       />
-
+      <div
+        className="px-2 
+            text-sm 
+            text-gray-500 text-center"
+            onClick={()=>navigate('/reset')}
+      >
+        Forgot password? 
+      </div>
       <div>
         <button
           disabled={isLoading}

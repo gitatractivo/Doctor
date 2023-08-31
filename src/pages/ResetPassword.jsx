@@ -1,7 +1,12 @@
 import { useForm } from "react-hook-form";
 import Input from "../components/Input";
+import { useState } from "react";
+import axios from "axios";
+import useLocalStorage from "../utils/useLocalStorage";
 
 const NewStaff = ({ isLoading, setIsLoading }) => {
+  const [first, setFirst] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -9,51 +14,98 @@ const NewStaff = ({ isLoading, setIsLoading }) => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data)
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://localhost:8080/api/auth/forget-password?email=${data.email}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const resp = await axios.request(config);
+    console.log(resp);
+    if (resp.status === 200) {
+      setFirst(true)
+    }
+  };
+  const onReset = async (data) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://localhost:8080/api/auth/set-new-password?resetPasswordToken=${data.token}&newPassword=${data.password}'`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    
+
+    const resp = await axios.request(config);
+    console.log(resp);
+    if (resp.status === 200) {
+      window.location.reload();
+    }
   };
 
   return (
     <div className="w-screen h-screen flex justify-center items-center bg-cyan-50">
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md shadow-xl shadow-cyan-100 bg-white p-8  ">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-            required
-            id="currentPassword"
-            label="Current Password"
-            type="password"
-          />
-          <Input
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-            required
-            id="newPassword"
-            label="New Password"
-            type="password"
-          />
-          <Input
-            disabled={isLoading}
-            register={register}
-            errors={errors}
-            required
-            id="confirmPassword"
-            label="Confirm Password"
-            type="password"
-          />
-
+        {first ? (
           <div>
-            <button
-              disabled={isLoading}
-              className="w-full bg-cyan-500 p-2 rounded-lg text-white tracking-widest font-bold"
-              type="submit"
-            >
-              {"Reset Password"}
-            </button>
+            <form className="space-y-6" onSubmit={handleSubmit(onReset)}>
+              <Input
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+                required
+                id="token"
+                label="Token"
+                type="text"
+              />
+              <Input
+                disabled={isLoading}
+                register={register}
+                errors={errors}
+                required
+                id="password"
+                label="New Password"
+                type="password"
+              />
+
+              <div>
+                <button
+                  disabled={isLoading}
+                  className="w-full bg-cyan-500 p-2 rounded-lg text-white tracking-widest font-bold"
+                  type="submit"
+                >
+                  {"Reset Password"}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        ) : (
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <Input
+              disabled={isLoading}
+              register={register}
+              errors={errors}
+              required
+              id="email"
+              label="Email"
+              type="email"
+            />
+
+            <div>
+              <button
+                disabled={isLoading}
+                className="w-full bg-cyan-500 p-2 rounded-lg text-white tracking-widest font-bold"
+                type="submit"
+              >
+                {"Reset Password"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
