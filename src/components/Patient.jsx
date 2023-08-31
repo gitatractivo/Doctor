@@ -1,12 +1,14 @@
 import { Modal } from "@mui/base";
 import { Backdrop } from "@mui/material";
 import Box from "@mui/material/Box";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PatientDetails from "./PatientDetails";
 import Input from "./Input";
-import { useForm ,Controller} from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
+import useLocalStorage from "../utils/useLocalStorage";
+import axios from "axios";
 
 const style = {
   position: "absolute",
@@ -21,26 +23,62 @@ const style = {
 
 const arr = [1, 2, 3, 4, 5];
 
-const Patient = ({addAppointment,setAddAppointment}) => {
+const Patient = ({ addAppointment, setAddAppointment }) => {
   const [value, setValue] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+  const [data, setdata] = useState([])
+  const [token, setToken] = useLocalStorage("token", null);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const {
-      register,
-      handleSubmit,
-      control,
-      formState: { errors },
-    } = useForm({
-      defaultValues: {
-        date: dayjs(new Date()),
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      date: dayjs(new Date()),
+    },
+  });
 
-    // Call useQuery directly inside the component
+  useEffect(()=>{
+    let config;
+    if(value===0){
+       config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: "http://localhost:8080/api/patients/upcoming",
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+         
+        },
+      };
+    }
+    else{
+      config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: "http://localhost:8080/api/patients/completed",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    }
 
-    const onSubmit = async (data) => {
-      console.log(data)
-    };
+    const fun = async ()=>{
+      const resp = await axios.request(config);
+      if(resp.status===200){
+
+        setdata(resp.data)
+      }
+    }
+    fun()
+  },[value])
+
+  // Call useQuery directly inside the component
+  const onSubmit = async (data) => {
+    console.log(data);
+  };
 
   const handleChange = (newValue) => {
     setValue(newValue);
@@ -81,9 +119,13 @@ const Patient = ({addAppointment,setAddAppointment}) => {
       </div>
 
       <div className="flex flex-col gap-5 mt-6">
-        {arr.map((_) => (
-          <PatientDetails />
-        ))}
+        {data.map((app) => {
+          if (value === 0 && app.visitCompleted) return;
+
+          if (value === 1 && !app.visitCompleted) return;
+
+           return <PatientDetails details={app}/>;
+        })}
       </div>
 
       <Modal

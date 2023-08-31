@@ -1,10 +1,13 @@
 import { useForm } from "react-hook-form";
 import Input from "./Input";
+import useLocalStorage from "../utils/useLocalStorage";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const SignIn = ({
-  isLoading,
-  setIsLoading,
-}) => {
+const SignIn = ({ isLoading, setIsLoading }) => {
+  const [token, setToken] = useLocalStorage("token", null);
+  const [user, setUser] = useLocalStorage("user", null);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -12,15 +15,24 @@ const SignIn = ({
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async(data) => {
-    console.log(data)
-    
-    
+  const onSubmit = async (data) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8080/api/auth/login",
 
-    
+      data: data,
+    };
 
-    
-      
+    const resp = await axios.request(config);
+
+    if (resp.status === 200) {
+      setToken(resp.data.token);
+      setUser(resp.data.user);
+      setTimeout(() => {
+        navigate("/");
+      }, 10);
+    }
   };
 
   return (

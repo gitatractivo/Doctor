@@ -4,7 +4,8 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import SearchIcon from "@mui/icons-material/Search";
 import { Avatar } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
+import { Modal } from "@mui/base";
+import { Backdrop, Box } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
 import Menu from "@mui/material/Menu";
@@ -12,8 +13,21 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { alpha, styled } from "@mui/material/styles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../utils/useLocalStorage";
+import axios from "axios";
+
+const style = {
+  position: "absolute" ,
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -35%)",
+  bgcolor: "background.paper",
+
+  boxShadow: 24,
+  p: 4,
+};
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -57,7 +71,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [first, setfirst] = useState(false);
   const navigate = useNavigate();
+  const [token, setToken] = useLocalStorage("token", null);
+  const [user, setUser] = useLocalStorage("user", null);
+  const [data, setdata] = useState([]);
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -68,6 +86,46 @@ export default function PrimarySearchAppBar() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+
+  const onDelete = async (id) => {
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `http://localhost:8080/api/staff/${id}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      
+    };
+
+    const resp = await axios.request(config);
+    if (resp.status === 200) {
+      window.location.reload();
+    }
+  };
+
+
+  useEffect(() => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8080/api/staff/all",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };;
+    
+
+    const fun = async () => {
+      const resp = await axios.request(config);
+      if (resp.status === 200) {
+        setdata(resp.data);
+      }
+    };
+    fun();
+  }, []);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -87,25 +145,21 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
+      
       <MenuItem
         onClick={(e) => {
           handleMenuClose();
-          navigate("/reset");
+          setfirst(true)
         }}
       >
-        Reset Password
+        All Staff
       </MenuItem>
+      
       <MenuItem
         onClick={(e) => {
           handleMenuClose();
-          navigate("/new");
-        }}
-      >
-        Add User
-      </MenuItem>
-      <MenuItem
-        onClick={(e) => {
-          handleMenuClose();
+          setToken(null);
+          setUser(null);
           navigate("/enter");
         }}
       >
@@ -176,6 +230,62 @@ export default function PrimarySearchAppBar() {
         </Toolbar>
       </AppBar>
       {renderMenu}
+      <Modal
+        open={first}
+        onClose={() => setfirst(false)}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+      >
+        <Box
+          sx={{
+            ...style,
+            outline: "none",
+            borderRadius: "5px",
+            width: "80vw",
+            // height:"80rem",
+            maxHeight: "80vh",
+            overflowY: "scroll",
+          }}
+          className="ease-in-out overflow-y-scroll scrollbar-track-slate-100   snap-y scroll-smooth  h-fit"
+        >
+          <div className="  flex flex-col justify-center ">
+            <h2
+              id="snap-start parent-modal-title scroll-mt-10"
+              className="text-2xl  mt-3 mb-2 mx-auto"
+            >
+              Staff details
+            </h2>
+            <div className="flex flex-row justify-end mb-2">
+              <button className="p-2 text-white bg-black font-bold rounded-md mr-2" onClick={()=>{
+                navigate('/new')
+              }}>Add</button>
+            </div>
+            {
+              data.map(staff=>{
+                console.log(staff)
+                return (
+                  <div
+                    className="bg-slate-200 p-3 rounded-md text-black font-medium my-2 flex flex-row justify-between"
+                    key={staff.id}
+                  >
+                    <span>{staff.name}</span>
+                    <span>{staff.specialization}</span>
+                    <button
+                      className="bg-red-500 p-2 text-white  font-bold rounded-md"
+                      onClick={() => onDelete(staff.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                );
+              })
+            }
+
+           </div>
+        </Box>
+      </Modal>
     </Box>
   );
 }

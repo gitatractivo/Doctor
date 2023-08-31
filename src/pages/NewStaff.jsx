@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../components/Input";
+import axios from "axios";
+import useLocalStorage from "../utils/useLocalStorage";
+import { useNavigate } from "react-router-dom";
 
 
 
 export default function AuthForm() {
   const [variant, setVariant] = useState("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [token, setToken] = useLocalStorage("token", null);
+  const navigate = useNavigate();
 
 
   const {
@@ -19,7 +23,22 @@ export default function AuthForm() {
   // Call useQuery directly inside the component
 
   const onSubmit = async (data) => {
-    console.log(data)
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8080/api/staff/add",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+
+    const resp = await axios.request(config);
+    if(resp.status===200){
+      alert("New staff added")
+      navigate('/')
+    }
   };
 
   return (
@@ -35,6 +54,9 @@ export default function AuthForm() {
           sm:px-10
         "
         >
+          <h1 className="text-2xl font-bold text-cyan-800 text-center mb-6">
+            Add New Staff
+          </h1>
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <Input
               disabled={isLoading}
@@ -50,37 +72,11 @@ export default function AuthForm() {
               register={register}
               errors={errors}
               required
-              id="role"
-              label="Role "
+              id="specialization"
+              label="specialization "
               type="text"
             />
-            <Input
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              required
-              id="email"
-              label="Email "
-              type="email"
-            />
-            <Input
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              required
-              id="password"
-              label="Password"
-              type="password"
-            />
-            <Input
-              disabled={isLoading}
-              register={register}
-              errors={errors}
-              required
-              id="passwordConfirmation"
-              label="Confirm Password"
-              type="password"
-            />
+            
 
             <div>
               <button
